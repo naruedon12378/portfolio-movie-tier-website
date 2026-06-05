@@ -58,6 +58,6 @@ export const tmdbService = {
   },
 
   getMovieDetail(id: string) {
-    return fetchJson(`/title/${id}`).then(mapImdbTitleToMovie);
+    return fetchJson(`/titles/${id}`);
   },
 };

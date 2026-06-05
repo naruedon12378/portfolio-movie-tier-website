@@ -8,11 +8,16 @@ interface Props {
 
 export default function MovieCard({ movie }: Props) {
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
-  const poster = movie.poster_path
-    ? movie.poster_path.startsWith("http")
+  const isRemotePoster = movie.poster_path?.startsWith("http");
+  const posterSrc = movie.poster_path
+    ? isRemotePoster
       ? movie.poster_path
-      : `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+      : `https://image.tmdb.org/t/p/w342${movie.poster_path}`
     : "https://placehold.co/400x600/111827/ffffff?text=No+Cover";
+
+  const posterSrcSet = movie.poster_path && !isRemotePoster
+    ? `https://image.tmdb.org/t/p/w185${movie.poster_path} 185w, https://image.tmdb.org/t/p/w342${movie.poster_path} 342w, https://image.tmdb.org/t/p/w500${movie.poster_path} 500w`
+    : undefined;
 
   return (
     <Link
@@ -20,8 +25,11 @@ export default function MovieCard({ movie }: Props) {
       className="relative block overflow-hidden rounded-xl transform hover:scale-105 transition-shadow duration-200 shadow-lg"
     >
       <img
-        src={poster}
+        src={posterSrc}
+        srcSet={posterSrcSet}
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
         alt={movie.title}
+        loading="lazy"
         className="w-full aspect-[2/3] object-cover"
       />
 
