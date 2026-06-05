@@ -12,7 +12,11 @@ export function useDarkMode() {
 
     if (saved) {
       const isDark = saved === "dark";
-      if (isDark) document.documentElement.classList.add("dark");
+      if (isDark) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
       setDark(isDark);
       return;
     }
@@ -22,6 +26,9 @@ export function useDarkMode() {
     if (prefersDark) {
       document.documentElement.classList.add('dark');
       setDark(true);
+    } else {
+      document.documentElement.classList.remove('dark');
+      setDark(false);
     }
   }, []);
 

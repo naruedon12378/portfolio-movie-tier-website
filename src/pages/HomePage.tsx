@@ -121,10 +121,10 @@ export default function HomePage() {
           <div className="p-6 bg-slate-950 text-white">
             <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Offline preview</p>
             <h2 className="mt-3 text-3xl font-semibold">
-              ไม่สามารถโหลดข้อมูลจาก API ได้
+              Unable to load data from API
             </h2>
             <p className="mt-3 text-gray-400 max-w-2xl">
-              ขณะนี้ระบบกำลังแสดงข้อมูลสำรองสำหรับรายการภาพยนตร์ เพื่อให้หน้าตาเว็บไซต์ยังคงดูสมบูรณ์และเข้าใจง่าย
+              The system is currently displaying fallback data for the movie list to ensure the website remains visually complete and easy to understand.
             </p>
           </div>
         </div>

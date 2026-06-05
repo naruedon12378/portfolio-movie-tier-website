@@ -95,26 +95,26 @@ export default function MovieDetailPage() {
           </button>
           {isError && (
             <div className="rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-3 text-yellow-100">
-              ไม่สามารถโหลดข้อมูล IMDb ได้ กำลังแสดงข้อมูลสำรอง
+              Unable to load IMDb data. Showing fallback information.
             </div>
           )}
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-          <div className="overflow-hidden rounded-3xl border border-white/10 bg-slate-900 shadow-2xl">
+          <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-2xl dark:border-white/10 dark:bg-slate-900">
             <img src={poster} alt={title} className="h-full w-full object-cover" />
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-2xl">
+            <div className="rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-2xl dark:border-white/10 dark:bg-slate-900/80">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
-                  <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">Movie</p>
-                  <h1 className="mt-3 text-4xl font-semibold tracking-tight text-white">{title}</h1>
-                  <p className="mt-2 text-sm text-gray-300">{year} • {runtime} • {genres || "Unknown Genre"}</p>
+                  <p className="text-sm uppercase tracking-[0.3em] text-cyan-600 dark:text-cyan-300">Movie</p>
+                  <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900 dark:text-white">{title}</h1>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{year} • {runtime} • {genres || "Unknown Genre"}</p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 rounded-3xl bg-slate-950/80 px-4 py-3 text-sm text-white shadow-inner ring-1 ring-white/10">
+                <div className="flex flex-wrap items-center gap-3 rounded-3xl bg-slate-100/90 px-4 py-3 text-sm text-slate-900 shadow-inner ring-1 ring-slate-200/70 dark:bg-slate-950/80 dark:text-white dark:ring-white/10">
                   <span className="inline-flex items-center gap-2 text-amber-300">
                     <span>⭐</span>
                     <span>{rating.toFixed(1)}</span>
