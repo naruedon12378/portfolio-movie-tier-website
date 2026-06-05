@@ -8,23 +8,30 @@ import fallbackCover from "../assets/fallback-cover.png";
 import { tmdbService } from "../services/tmdb.service";
 import { fallbackMovies } from "../data/fallbackMovies";
 
+interface MovieListResponse {
+  movies: typeof fallbackMovies;
+  nextPageToken?: string;
+}
+
 export default function HomePage() {
-  const [searchParams, setSearchParams] =
-    useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") ?? "";
-  const [searchValue, setSearchValue] =
-    useState(query);
+  const [searchValue, setSearchValue] = useState(query);
+  const [pageToken, setPageToken] = useState<string | undefined>(undefined);
+  const [historyTokens, setHistoryTokens] = useState<(string | undefined)[]>([]);
 
   useEffect(() => {
     setSearchValue(query);
+    setPageToken(undefined);
+    setHistoryTokens([]);
   }, [query]);
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["movies", query],
+  const { data, isLoading, isError } = useQuery<MovieListResponse>({
+    queryKey: ["movies", query, pageToken],
     queryFn: () =>
       query
-        ? tmdbService.searchMovies(query)
-        : tmdbService.getTrendingMovies(),
+        ? tmdbService.searchMovies(query, pageToken)
+        : tmdbService.getTrendingMovies(undefined, pageToken),
     retry: 0,
   });
 
@@ -41,8 +48,28 @@ export default function HomePage() {
     setSearchParams({});
   };
 
-  const movies = data ?? (isError ? fallbackMovies : []);
-  const showFallback = isError && !data?.length;
+  const handleNextPage = () => {
+    const nextToken = data?.nextPageToken;
+    if (!nextToken) return;
+
+    setHistoryTokens((prev) => [...prev, pageToken]);
+    setPageToken(nextToken);
+  };
+
+  const handleBackPage = () => {
+    if (!historyTokens.length) return;
+
+    setHistoryTokens((prev) => {
+      const nextHistory = [...prev];
+      const previousToken = nextHistory.pop();
+      setPageToken(previousToken);
+      return nextHistory;
+    });
+  };
+
+  const movies = data?.movies ?? (isError ? fallbackMovies : []);
+  const showFallback = isError && !data?.movies?.length;
+  const pageNumber = historyTokens.length + 1;
 
   return (
     <div className="container mx-auto p-4">
@@ -56,6 +83,30 @@ export default function HomePage() {
         onSearch={handleSearch}
         onReset={handleReset}
       />
+
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={!historyTokens.length}
+            onClick={handleBackPage}
+            className="rounded-lg border border-gray-700 bg-slate-800 px-4 py-3 text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+          >
+            Back
+          </button>
+
+          <button
+            type="button"
+            disabled={!data?.nextPageToken}
+            onClick={handleNextPage}
+            className="rounded-lg bg-indigo-600 px-4 py-3 text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+          >
+            Next
+          </button>
+        </div>
+
+        <p className="text-sm text-gray-300">Page {pageNumber}</p>
+      </div>
 
       {showFallback && (
         <div className="mb-8 overflow-hidden rounded-3xl border border-gray-800 bg-slate-950 shadow-2xl">

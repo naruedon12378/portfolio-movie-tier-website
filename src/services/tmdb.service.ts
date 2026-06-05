@@ -1,4 +1,4 @@
-﻿const IMDB_BASE = 'https://api.imdbapi.dev';
+﻿const IMDB_BASE = "https://api.imdbapi.dev";
 
 function mapImdbTitleToMovie(item: any) {
   return {
@@ -12,6 +12,28 @@ function mapImdbTitleToMovie(item: any) {
   };
 }
 
+function normalizePageToken(response: any) {
+  return (
+    response?.nextPageToken ||
+    response?.next_page_token ||
+    response?.pageToken ||
+    response?.nextToken ||
+    response?.next ||
+    undefined
+  );
+}
+
+function mapMovieListResponse(response: any) {
+  return {
+    movies: (response.titles || response.results || []).map(mapImdbTitleToMovie),
+    nextPageToken: normalizePageToken(response),
+  };
+}
+
+function buildPageTokenParam(pageToken?: string) {
+  return pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : "";
+}
+
 async function fetchJson(path: string) {
   const res = await fetch(`${IMDB_BASE}${path}`);
   if (!res.ok) throw new Error(`IMDB fetch failed: ${res.status}`);
@@ -19,21 +41,23 @@ async function fetchJson(path: string) {
 }
 
 export const tmdbService = {
-  getTrendingMovies(query?: string, page = 1) {
-    const searchParam = query ? `&query=${encodeURIComponent(query)}` : "";
-    return fetchJson(`/titles?types=MOVIE${searchParam}&page=${page}`)
-      .then((res: any) => (res.titles || []).map(mapImdbTitleToMovie));
+  getTrendingMovies(query?: string, pageToken?: string) {
+    const queryParam = query ? `&query=${encodeURIComponent(query)}` : "";
+    const tokenParam = buildPageTokenParam(pageToken);
+
+    return fetchJson(`/titles?types=MOVIE${queryParam}${tokenParam}`).then(
+      mapMovieListResponse
+    );
   },
 
-  searchMovies(query: string, page = 1) {
+  searchMovies(query: string, pageToken?: string) {
+    const tokenParam = buildPageTokenParam(pageToken);
     return fetchJson(
-      `/search/titles?query=${encodeURIComponent(query)}&limit=30`
-    ).then((res: any) =>
-      (res.results || res.titles || []).map(mapImdbTitleToMovie)
-    );
+      `/search/titles?query=${encodeURIComponent(query)}&limit=30${tokenParam}`
+    ).then(mapMovieListResponse);
   },
 
   getMovieDetail(id: string) {
     return fetchJson(`/title/${id}`).then(mapImdbTitleToMovie);
-  }
+  },
 };
