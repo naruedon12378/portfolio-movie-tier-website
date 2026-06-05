@@ -91,7 +91,7 @@ export default function MovieDetailPage() {
             onClick={() => navigate(-1)}
             className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/10"
           >
-            ← กลับ
+            ← Back
           </button>
           {isError && (
             <div className="rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-3 text-yellow-100">
